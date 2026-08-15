@@ -39,15 +39,15 @@
       <field type="float" name="covariance">Pose covariance</field>
     </message>
 
-    <message id="52101" name="AI_FISH_DETECTION_RESULT">
-      <description>Fish detection summary result</description>
-      <field type="uint32_t" name="time_boot_ms">Timestamp (ms)</field>
-      <field type="uint16_t" name="image_width">Image width</field>
-      <field type="uint16_t" name="image_height">Image height</field>
-      <field type="float" name="fish_coverage_pct">Fish coverage percentage (0-100)</field>
-      <field type="uint16_t" name="fish_count">Number of fish</field>
-      <field type="float" name="tuna_similarity_pct">Tuna similarity (0-100)</field>
-      <field type="uint16_t" name="bird_count">Bird count</field>
+    <message id="52101" name="AI_FLOOD_DETECTION_RESULT">
+      <description>Flood and waterlogging detection summary result</description>
+      <field type="uint32_t" name="time_boot_ms">Timestamp since AI boot (ms)</field>
+      <field type="uint16_t" name="image_width">Image width in pixels</field>
+      <field type="uint16_t" name="image_height">Image height in pixels</field>
+      <field type="float" name="water_coverage_pct">Water coverage percentage of full image (0-100)</field>
+      <field type="float" name="road_water_pct">Water coverage percentage of road region (0-100)</field>
+      <field type="uint8_t" name="flood_level">Flood level: 0=none, 1=low, 2=medium, 3=high</field>
+      <field type="float" name="confidence">Flood detection confidence (0-1)</field>
       <field type="float" name="inference_fps">Inference FPS</field>
     </message>
   </messages>
