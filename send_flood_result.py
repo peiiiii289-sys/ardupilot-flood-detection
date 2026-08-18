@@ -5,7 +5,10 @@ import sys
 import time
 from pathlib import Path
 
-# 使用目前這個 flood 專案裡剛生成的 pymavlink dialect
+# ============================================================
+# 使用專案自己的 pymavlink / ardupilotmega dialect
+# ============================================================
+
 PROJECT_ROOT = Path(__file__).resolve().parent
 LOCAL_MAVLINK = PROJECT_ROOT / "modules" / "mavlink"
 
@@ -17,71 +20,97 @@ os.environ["MAVLINK_DIALECT"] = "ardupilotmega"
 from pymavlink import mavutil
 
 
-CONNECT = "tcp:127.0.0.1:5762"
+# ============================================================
+# MAVLink connection
+# ============================================================
 
-SYSID = 42
-COMPID = 211
+CONNECTION = "tcp:127.0.0.1:5762"
+
+SOURCE_SYSTEM = 42
+SOURCE_COMPONENT = 211
+
+
+# ============================================================
+# Fake FloodResult
+#
+# 這裡先使用團隊文件中的 W2 範例資料。
+# A 模型完成後，只需要把這些假資料換成 A 的真實 FloodResult。
+# ============================================================
+
+WATER_COVERAGE_PCT = 25.3
+ROAD_WATER_PCT = 42.8
+WATER_REGION_COUNT = 2
+FLOOD_LEVEL = 2
+CONFIDENCE = 0.91
+LATITUDE = 22.6701
+LONGITUDE = 120.4881
+INFERENCE_FPS = 15.7
+
+SEND_INTERVAL_SEC = 1.0
 
 
 def main():
-    print("========================================")
-    print(" Flood Detection MAVLink Test Sender")
-    print("========================================")
-    print(f"Connect : {CONNECT}")
-    print(f"SYSID   : {SYSID}")
-    print(f"COMPID  : {COMPID}")
+
+    print("==============================================")
+    print(" AI FLOOD MAVLink Sender")
+    print("==============================================")
+    print(f"Connection : {CONNECTION}")
+    print(f"System ID  : {SOURCE_SYSTEM}")
+    print(f"Component  : {SOURCE_COMPONENT}")
+    print("Message ID : 52101")
+    print("Fields     : 9")
+    print("==============================================")
+
     print()
+    print("Connecting to ArduPlane SERIAL1 ...")
 
     master = mavutil.mavlink_connection(
-        CONNECT,
-        source_system=SYSID,
-        source_component=COMPID,
+        CONNECTION,
+        source_system=SOURCE_SYSTEM,
+        source_component=SOURCE_COMPONENT
     )
 
-    print("Connected to ArduPlane SERIAL1")
-    print("Sending AI_FLOOD_DETECTION_RESULT...")
+    print("Connected.")
+    print("Sending AI_FLOOD_DETECTION_RESULT ...")
     print("Press Ctrl+C to stop.")
     print()
 
     try:
+
         while True:
-            time_boot_ms = int(time.monotonic() * 1000) & 0xFFFFFFFF
 
-            image_width = 1920
-            image_height = 1080
-
-            water_coverage_pct = 63.5
-            road_water_pct = 48.2
-
-            flood_level = 2
-            confidence = 0.92
-
-            inference_fps = 18.5
+            # Unix timestamp，毫秒
+            timestamp = int(time.time() * 1000)
 
             master.mav.ai_flood_detection_result_send(
-                time_boot_ms,
-                image_width,
-                image_height,
-                water_coverage_pct,
-                road_water_pct,
-                flood_level,
-                confidence,
-                inference_fps,
+                timestamp,
+                WATER_COVERAGE_PCT,
+                ROAD_WATER_PCT,
+                WATER_REGION_COUNT,
+                FLOOD_LEVEL,
+                CONFIDENCE,
+                LATITUDE,
+                LONGITUDE,
+                INFERENCE_FPS
             )
 
             print(
-                f"FLOOD SENT | "
-                f"water={water_coverage_pct:.1f}% "
-                f"road={road_water_pct:.1f}% "
-                f"level={flood_level} "
-                f"conf={confidence:.2f} "
-                f"fps={inference_fps:.1f}"
+                "FLOOD SENT | "
+                f"timestamp={timestamp} "
+                f"water={WATER_COVERAGE_PCT:.1f}% "
+                f"road={ROAD_WATER_PCT:.1f}% "
+                f"regions={WATER_REGION_COUNT} "
+                f"level={FLOOD_LEVEL} "
+                f"conf={CONFIDENCE:.2f} "
+                f"lat={LATITUDE:.4f} "
+                f"lon={LONGITUDE:.4f} "
+                f"fps={INFERENCE_FPS:.1f}"
             )
 
-            # 先用 1 Hz 測試，避免 GCS 訊息洗版
-            time.sleep(1)
+            time.sleep(SEND_INTERVAL_SEC)
 
     except KeyboardInterrupt:
+
         print()
         print("Flood sender stopped.")
 
