@@ -1128,61 +1128,56 @@ void GCS_MAVLINK_Plane::handle_message(const mavlink_message_t &msg)
         break;
     }
 
-    case MAVLINK_MSG_ID_AI_FISH_DETECTION_RESULT: {
+    case MAVLINK_MSG_ID_AI_FLOOD_DETECTION_RESULT: {
 
-        // ===== 1. 來源檢查（只接受 AI component 211）=====
+        // 1. 只接受 AI computer component 211
         if (msg.compid != MAV_COMP_ID_UNICO_AI_COMPUTER) {
             gcs().send_text(
                 MAV_SEVERITY_WARNING,
-                "AI_FISH_DROP src_comp=%u expected=211",
+                "AI_FLOOD_DROP src_comp=%u expected=211",
                 (unsigned)msg.compid
             );
             break;
         }
 
-        // ===== 2. payload 長度檢查（修正版）=====
-        const uint8_t expected_min = 23; // ⭐實際 wire 長度（已驗證）
-        const uint8_t expected_max = MAVLINK_MSG_ID_AI_FISH_DETECTION_RESULT_LEN;
+        // 2. MAVLink 2 may truncate trailing zero bytes.
+        //    Therefore only reject payloads larger than the defined message.
+        const uint8_t expected_max = MAVLINK_MSG_ID_AI_FLOOD_DETECTION_RESULT_LEN;
 
-        if (msg.len < expected_min || msg.len > expected_max) {
+        if (msg.len > expected_max) {
             gcs().send_text(
                 MAV_SEVERITY_WARNING,
-                "AI_FISH_DROP bad_len=%u expected=%u..%u",
+                "AI_FLOOD_DROP bad_len=%u max=%u",
                 (unsigned)msg.len,
-                (unsigned)expected_min,
                 (unsigned)expected_max
             );
             break;
-            
         }
 
-        // ===== 3. decode =====
-        mavlink_ai_fish_detection_result_t pkt;
-        mavlink_msg_ai_fish_detection_result_decode(&msg, &pkt);
+        // 3. Decode flood detection result
+        mavlink_ai_flood_detection_result_t pkt;
+        mavlink_msg_ai_flood_detection_result_decode(&msg, &pkt);
 
-        // ===== 4. debug log（給你驗證用）=====
+        // 4. Show flood result on GCS / MAVProxy
         gcs().send_text(
             MAV_SEVERITY_INFO,
-            "AI_FISH cov=%.1f fish=%u tuna=%.1f bird=%u fps=%.1f size=%ux%u",
-            (double)pkt.fish_coverage_pct,
-            (unsigned)pkt.fish_count,
-            (double)pkt.tuna_similarity_pct,
-            (unsigned)pkt.bird_count,
-            (double)pkt.inference_fps,
-            (unsigned)pkt.image_width,
-            (unsigned)pkt.image_height
+            "AI_FLOOD w=%.1f r=%.1f L=%u c=%.2f fps=%.1f",
+            (double)pkt.water_coverage_pct,
+            (double)pkt.road_water_pct,
+            (unsigned)pkt.flood_level,
+            (double)pkt.confidence,
+            (double)pkt.inference_fps
         );
 
-        // ===== 5. 以 MAVLink message 重新編碼後轉送到所有 active GCS channels =====
-        // ===== 5. 轉送到 active GCS channels =====
+        // 5. Forward result to all active GCS channels
         gcs().send_to_active_channels(
-            MAVLINK_MSG_ID_AI_FISH_DETECTION_RESULT,
+            MAVLINK_MSG_ID_AI_FLOOD_DETECTION_RESULT,
             (const char *)&pkt
         );
 
         break;
     }
-    
+
     case MAVLINK_MSG_ID_COMMAND_ACK: {
         mavlink_command_ack_t pkt;
         mavlink_msg_command_ack_decode(&msg, &pkt);
