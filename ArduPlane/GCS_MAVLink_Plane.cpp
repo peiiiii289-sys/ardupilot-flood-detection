@@ -1158,7 +1158,21 @@ void GCS_MAVLINK_Plane::handle_message(const mavlink_message_t &msg)
         mavlink_ai_flood_detection_result_t pkt;
         mavlink_msg_ai_flood_detection_result_decode(&msg, &pkt);
 
-        // 4. Show flood result on GCS / MAVProxy
+        // 4. Save latest flood result in ArduPilot
+        plane.flood_detection.update(
+            pkt.timestamp,
+            pkt.water_coverage_pct,
+            pkt.road_water_pct,
+            pkt.water_region_count,
+            pkt.flood_level,
+            pkt.confidence,
+            pkt.latitude,
+            pkt.longitude,
+            pkt.inference_fps,
+            AP_HAL::millis()
+        );
+
+        // 5. Show flood result on GCS / MAVProxy
         gcs().send_text(
             MAV_SEVERITY_INFO,
             "AI_FLOOD w=%.1f r=%.1f L=%u c=%.2f fps=%.1f",
@@ -1169,7 +1183,7 @@ void GCS_MAVLINK_Plane::handle_message(const mavlink_message_t &msg)
             (double)pkt.inference_fps
         );
 
-        // 5. Forward result to all active GCS channels
+        // 6. Forward result to all active GCS channels
         gcs().send_to_active_channels(
             MAVLINK_MSG_ID_AI_FLOOD_DETECTION_RESULT,
             (const char *)&pkt

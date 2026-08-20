@@ -83,6 +83,7 @@
 #include <AP_Landing/AP_Landing.h>
 #include <AP_LandingGear/AP_LandingGear.h>     // Landing Gear library
 #include <AP_LandingAI/AP_LandingAI.h>
+#include <AP_FloodDetection/AP_FloodDetection.h>
 #include <AP_Follow/AP_Follow.h>
 #include <AP_ExternalControl/AP_ExternalControl_config.h>
 #if AP_EXTERNAL_CONTROL_ENABLED
@@ -709,6 +710,7 @@ private:
             FUNCTOR_BIND_MEMBER(&Plane::disarm_if_autoland_complete, void),
             FUNCTOR_BIND_MEMBER(&Plane::update_flight_stage, void)};
     AP_LandingAI landing_ai;
+    AP_FloodDetection flood_detection;
 #if HAL_ADSB_ENABLED
     AP_ADSB adsb;
 #endif  // HAL_ADSB_ENABLED
