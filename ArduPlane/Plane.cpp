@@ -1201,7 +1201,30 @@ void Plane::check_ai_vision_ack_timeout(uint32_t now_ms)
 }
 void Plane::update_ai_vision_timeout()
 {
-    check_ai_vision_ack_timeout(AP_HAL::millis());
+    const uint32_t now_ms = AP_HAL::millis();
+
+    // Existing AI Vision ACK timeout check
+    check_ai_vision_ack_timeout(now_ms);
+
+    // Flood MAVLink timeout check
+    // Version 2: consider flood link lost if no result for 5 seconds.
+    flood_detection.update_link_health(now_ms, 5000U);
+
+    if (flood_detection.timeout_pending()) {
+        gcs().send_text(
+            MAV_SEVERITY_WARNING,
+            "FLOOD_LINK_TIMEOUT timeout_ms=5000"
+        );
+        flood_detection.clear_timeout_pending();
+    }
+
+    if (flood_detection.recovery_pending()) {
+        gcs().send_text(
+            MAV_SEVERITY_INFO,
+            "FLOOD_LINK_RECOVERED"
+        );
+        flood_detection.clear_recovery_pending();
+    }
 }
 
 /*

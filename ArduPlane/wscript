@@ -28,6 +28,7 @@ def build(bld):
             'AP_IRLock',
             'AP_Quicktune',
             'AP_LandingAI',
+            'AP_FloodDetection',
         ],
     )
 
