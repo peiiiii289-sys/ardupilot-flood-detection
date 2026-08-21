@@ -1207,13 +1207,13 @@ void Plane::update_ai_vision_timeout()
     check_ai_vision_ack_timeout(now_ms);
 
     // Flood MAVLink timeout check
-    // Version 2: consider flood link lost if no result for 3 seconds.
-    flood_detection.update_link_health(now_ms, 3000U);
+    // Version 2: consider flood link lost if no result for 5 seconds.
+    flood_detection.update_link_health(now_ms, 5000U);
 
     if (flood_detection.timeout_pending()) {
         gcs().send_text(
             MAV_SEVERITY_WARNING,
-            "FLOOD_LINK_TIMEOUT timeout_ms=3000"
+            "FLOOD_LINK_TIMEOUT timeout_ms=5000"
         );
         flood_detection.clear_timeout_pending();
     }
