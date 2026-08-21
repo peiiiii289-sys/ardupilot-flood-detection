@@ -28,6 +28,12 @@ public:
 
         _last_update_ms = now_ms;
         _have_result = true;
+
+        // 若先前曾 timeout，收到新資料時標記為已恢復
+        if (_link_lost) {
+            _link_lost = false;
+            _recovery_pending = true;
+        }
     }
 
     bool have_result() const { return _have_result; }
@@ -50,6 +56,35 @@ public:
                (now_ms - _last_update_ms) <= timeout_ms;
     }
 
+    void update_link_health(uint32_t now_ms, uint32_t timeout_ms)
+    {
+        if (!_have_result) {
+            return;
+        }
+
+        if (!result_recent(now_ms, timeout_ms) && !_link_lost) {
+            _link_lost = true;
+            _timeout_start_ms = now_ms;
+            _timeout_pending = true;
+        }
+    }
+
+    bool link_lost() const { return _link_lost; }
+
+    bool timeout_pending() const { return _timeout_pending; }
+    void clear_timeout_pending() { _timeout_pending = false; }
+
+    bool recovery_pending() const { return _recovery_pending; }
+    void clear_recovery_pending() { _recovery_pending = false; }
+
+    uint32_t timeout_duration_ms(uint32_t now_ms) const
+    {
+        if (!_link_lost || _timeout_start_ms == 0) {
+            return 0;
+        }
+        return now_ms - _timeout_start_ms;
+    }
+
 private:
     uint64_t _timestamp = 0;
 
@@ -68,4 +103,9 @@ private:
 
     uint32_t _last_update_ms = 0;
     bool _have_result = false;
+
+    bool _link_lost = false;
+    bool _timeout_pending = false;
+    bool _recovery_pending = false;
+    uint32_t _timeout_start_ms = 0;
 };

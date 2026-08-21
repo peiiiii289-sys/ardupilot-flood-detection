@@ -26,7 +26,7 @@ from pymavlink import mavutil
 
 CONNECTION = "tcp:127.0.0.1:5762"
 
-SOURCE_SYSTEM = 42
+SOURCE_SYSTEM = 1
 SOURCE_COMPONENT = 211
 
 

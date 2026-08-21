@@ -28,7 +28,7 @@ from shared.flood_result import FloodResult
 # ============================================================
 
 CONNECTION = "tcp:127.0.0.1:5762"
-SOURCE_SYSTEM = 42
+SOURCE_SYSTEM = 1
 SOURCE_COMPONENT = 211
 
 _master = None
