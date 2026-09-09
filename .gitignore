@@ -191,3 +191,5 @@ __pycache__/
 # Accidental local entry
 /cd ~
 
+database/flood_data.db
+videos/
