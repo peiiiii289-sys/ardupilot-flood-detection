@@ -191,3 +191,5 @@ __pycache__/
 # Accidental local entry
 /cd ~
 
+docs/results/*.csv
+tests/dashboard_fake_result.json

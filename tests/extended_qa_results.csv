@@ -1,0 +1,6 @@
+﻿case_id,description,purpose,dependency,expected_behavior,actual_result,status,notes
+T4,陰影,測試是否將道路陰影誤判為積水,A_AI,不得因陰影本身造成錯誤積水判定,,WAITING,等待 A 的真實 AI 模型與測試影像
+T5,強反光,測試反射光是否造成積水誤判,A_AI,不得因強反光本身造成錯誤積水判定,,WAITING,等待 A 的真實 AI 模型與測試影像
+T6,車輛或物體遮擋,測試遮擋情況下的辨識穩定性,A_AI,遮擋情況下輸出應保持合理且可判讀,,WAITING,等待 A 的真實 AI 模型與遮擋場景
+T7,手機串流斷線,測試 Camera 輸入中斷與備援,C_CAMERA,偵測到輸入中斷並可切換至備援來源,,WAITING,等待 C Camera 模組整合
+T8,MAVLink 暫時失聯,測試通訊失聯與恢復狀態,B_MAVLINK,可顯示通訊異常並在連線恢復後正常更新,,WAITING,等待 B MAVLink 整合

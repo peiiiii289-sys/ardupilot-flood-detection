@@ -1,0 +1,5 @@
+case_id,description,expected_level,actual_level,road_water_pct
+T0,乾燥道路,0,0,3.2
+T1,少量局部積水,1,1,12.8
+T2,中度積水,2,2,42.8
+T3,大範圍積水,3,3,72.4

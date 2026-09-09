@@ -1,0 +1,8 @@
+﻿case_id,description,expected_behavior,actual_result,status,dependency,notes
+L0,Live 持續資料輸入,Dashboard 應顯示 ONLINE,Dashboard 顯示 ONLINE 並持續更新,PASS,D_LIVE,使用 live_simulator 經 C save_result 寫入 SQLite
+L1,W0-W3 即時更新,Dashboard 應依新資料自動更新 W0-W3,道路積水比例與 W0-W3 每秒自動變化,PASS,D_LIVE,不需手動重新整理瀏覽器
+L2,Live 資料延遲,停止資料 3 至 5 秒時應顯示 STALE,Dashboard 在資料延遲期間正確顯示 STALE,PASS,D_LIVE,停止 live_simulator 後約 3 至 5 秒完成實際驗證
+L3,Live 資料中斷,超過 5 秒沒有新資料應顯示 OFFLINE,Dashboard 正確顯示 OFFLINE,PASS,D_LIVE,停止 live_simulator 後完成驗證
+L4,OFFLINE 保留最後資料,斷線時應保留最後一筆 FloodResult,最後一筆 FloodResult 仍正常顯示,PASS,D_LIVE,避免斷線後畫面完全空白
+L5,Live 自動恢復,重新收到資料後應自動恢復 ONLINE,重新啟動 simulator 後自動由 OFFLINE 變 ONLINE,PASS,D_LIVE,未按 F5
+L6,Live 歷史資料更新,歷史筆數圖表與 W0-W3 統計應持續更新,歷史資料筆數與圖表持續增加,PASS,D_LIVE,SQLite 歷史資料讀取

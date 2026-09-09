@@ -1,0 +1,11 @@
+{
+    "timestamp": 1786632003000,
+    "water_coverage_pct": 61.5,
+    "road_water_pct": 72.4,
+    "water_region_count": 5,
+    "flood_level": 3,
+    "confidence": 0.94,
+    "latitude": 22.6704,
+    "longitude": 120.4884,
+    "inference_fps": 14.8
+}
