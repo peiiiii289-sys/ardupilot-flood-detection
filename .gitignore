@@ -193,3 +193,5 @@ __pycache__/
 
 database/flood_data.db
 videos/
+docs/results/*.csv
+tests/dashboard_fake_result.json
